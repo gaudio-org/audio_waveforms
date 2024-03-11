@@ -207,7 +207,7 @@ class AudioWaveformsInterface {
           var key = call.arguments[Constants.playerKey];
           var playerState = (call.arguments[Constants.finishtype] is int) &&
                   call.arguments[Constants.finishtype] == 0
-              ? PlayerState.playing
+              ? PlayerState.paused
               : call.arguments[Constants.finishtype] == 1
                   ? PlayerState.paused
                   : PlayerState.stopped;

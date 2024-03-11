@@ -256,11 +256,9 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
     scrollScale = 1.0;
     if (mounted) setState(() {});
 
-    if (widget.waveformType.isLong) {
-      widget.playerController.seekTo(
-        (widget.playerController.maxDuration * _proportion).toInt(),
-      );
-    }
+    widget.playerController.seekTo(
+      (widget.playerController.maxDuration * _proportion).toInt(),
+    );
   }
 
   void _addWaveformData(List<double> data) {
@@ -285,7 +283,8 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
   void _handleScrubberSeekUpdate(DragUpdateDetails details) {
     _proportion = details.localPosition.dx / widget.size.width;
     var seekPosition = widget.playerController.maxDuration * _proportion;
-
+    _seekProgress.value = seekPosition.toInt();
+    _updatePlayerPercent(widget.size);
     widget.playerController.seekTo(seekPosition.toInt());
   }
 
@@ -293,7 +292,8 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
   void _handleScrubberSeekStart(TapUpDetails details) {
     _proportion = details.localPosition.dx / widget.size.width;
     var seekPosition = widget.playerController.maxDuration * _proportion;
-
+    _seekProgress.value = seekPosition.toInt();
+    _updatePlayerPercent(widget.size);
     widget.playerController.seekTo(seekPosition.toInt());
   }
 
@@ -339,6 +339,12 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
       _proportion = (details.delta.dx - start) /
           (_waveformData.length * widget.playerWaveStyle.spacing);
     }
+
+    var seekPosition = widget.playerController.maxDuration * _proportion;
+    _seekProgress.value = seekPosition.toInt();
+    _updatePlayerPercent(widget.size);
+    widget.playerController.seekTo(seekPosition.toInt());
+
     if (mounted) setState(() {});
   }
 
