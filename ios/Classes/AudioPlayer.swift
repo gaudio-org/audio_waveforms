@@ -49,7 +49,7 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
         switch self.finishMode {
         case .loop:
             self.player?.currentTime = 0
-            self.player?.play()
+            self.player?.pause()
             finishType = 0
         case .pause:
             self.player?.pause()
@@ -80,7 +80,6 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
     }
     
     func pausePlayer(result: @escaping FlutterResult) {
-        stopListening()
         player?.pause()
         result(true)
     }
@@ -120,6 +119,8 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
     func seekTo(_ time: Int?, _ result: @escaping FlutterResult) {
         if(time != nil) {
             player?.currentTime = Double(time! / 1000)
+            let ms = (self.player?.currentTime ?? 0) * 1000
+            self.flutterChannel.invokeMethod(Constants.onCurrentDuration, arguments: [Constants.current: Int(ms), Constants.playerKey: self.playerKey])
             result(true)
         } else {
             result(false)
