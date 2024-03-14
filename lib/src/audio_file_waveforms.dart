@@ -62,6 +62,8 @@ class AudioFileWaveforms extends StatefulWidget {
   /// Allow seeking with gestures when turned on.
   final bool enableSeekGesture;
 
+  final Function? onSeekStartCb;
+
   /// Generate waveforms from audio file. You play those audio file using
   /// [PlayerController].
   ///
@@ -86,6 +88,7 @@ class AudioFileWaveforms extends StatefulWidget {
     this.clipBehavior = Clip.none,
     this.waveformType = WaveformType.long,
     this.enableSeekGesture = true,
+    this.onSeekStartCb,
   }) : super(key: key);
 
   @override
@@ -191,7 +194,13 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
       child: GestureDetector(
         onHorizontalDragUpdate:
             widget.enableSeekGesture ? _handleDragGestures : null,
-        onTapUp: widget.enableSeekGesture ? _handleScrubberSeekStart : null,
+        onTapUp: widget.enableSeekGesture
+            ? (details) {
+                widget.onSeekStartCb?.call();
+                _handleScrubberSeekStart(details);
+              }
+            : null,
+        onHorizontalDragDown: (details) => widget.onSeekStartCb?.call(),
         onHorizontalDragStart:
             widget.enableSeekGesture ? _handleHorizontalDragStart : null,
         onHorizontalDragEnd:
