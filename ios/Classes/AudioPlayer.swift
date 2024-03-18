@@ -37,6 +37,7 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
             player?.rate = 1.0
             player?.prepareToPlay()
             player?.volume = Float(volume ?? 1.0)
+            startListening()
             result(true)
         } else {
             result(FlutterError(code: Constants.audioWaveforms, message: "Audio file path can't be empty or null", details: nil))
@@ -75,7 +76,6 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
         }
         player?.play()
         player?.delegate = self
-        startListening()
         result(true)
     }
     
@@ -119,8 +119,10 @@ class AudioPlayer: NSObject, AVAudioPlayerDelegate {
     func seekTo(_ time: Int?, _ result: @escaping FlutterResult) {
         if(time != nil) {
             player?.currentTime = Double(time! / 1000)
-            let ms = (self.player?.currentTime ?? 0) * 1000
-            self.flutterChannel.invokeMethod(Constants.onCurrentDuration, arguments: [Constants.current: Int(ms), Constants.playerKey: self.playerKey])
+            if(timer == nil) {
+                let ms = (self.player?.currentTime ?? 0) * 1000
+                self.flutterChannel.invokeMethod(Constants.onCurrentDuration, arguments: [Constants.current: Int(ms), Constants.playerKey: self.playerKey])
+            }
             result(true)
         } else {
             result(false)

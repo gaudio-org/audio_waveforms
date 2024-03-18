@@ -62,7 +62,7 @@ class AudioFileWaveforms extends StatefulWidget {
   /// Allow seeking with gestures when turned on.
   final bool enableSeekGesture;
 
-  final Function? onSeekStartCb;
+  final Function? onSeekCb;
 
   /// Generate waveforms from audio file. You play those audio file using
   /// [PlayerController].
@@ -88,7 +88,7 @@ class AudioFileWaveforms extends StatefulWidget {
     this.clipBehavior = Clip.none,
     this.waveformType = WaveformType.long,
     this.enableSeekGesture = true,
-    this.onSeekStartCb,
+    this.onSeekCb,
   }) : super(key: key);
 
   @override
@@ -184,6 +184,8 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
 
   final List<double> _waveformData = [];
 
+  bool longPressed = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -192,19 +194,40 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
       decoration: widget.decoration,
       clipBehavior: widget.clipBehavior,
       child: GestureDetector(
-        onHorizontalDragUpdate:
-            widget.enableSeekGesture ? _handleDragGestures : null,
         onTapUp: widget.enableSeekGesture
             ? (details) {
-                widget.onSeekStartCb?.call();
                 _handleScrubberSeekStart(details);
+                widget.onSeekCb?.call(_seekProgress.value, false);
               }
             : null,
-        onHorizontalDragDown: (details) => widget.onSeekStartCb?.call(),
-        onHorizontalDragStart:
-            widget.enableSeekGesture ? _handleHorizontalDragStart : null,
-        onHorizontalDragEnd:
-            widget.enableSeekGesture ? (_) => _handleOnDragEnd() : null,
+        onHorizontalDragStart: widget.enableSeekGesture
+            ? (details) {
+                _handleHorizontalDragStart(details);
+              }
+            : null,
+        onHorizontalDragEnd: widget.enableSeekGesture
+            ? (details) {
+                _handleOnDragEnd();
+                if (longPressed) {
+                  widget.onSeekCb?.call(_seekProgress.value, true);
+                  setState(() => longPressed = false);
+                } else {
+                  widget.onSeekCb?.call(_seekProgress.value, false);
+                }
+              }
+            : null,
+        onHorizontalDragUpdate: widget.enableSeekGesture
+            ? (details) {
+                _handleDragGestures(details);
+              }
+            : null,
+        onLongPressDown: (details) {
+          setState(() => longPressed = true);
+          debugPrint('onLongPressDown');
+        },
+        onLongPressCancel: () {
+          debugPrint('onLongPressCancel');
+        },
         child: ClipPath(
           // TODO: Update extraClipperHeight when duration labels are added
           clipper: WaveClipper(extraClipperHeight: 0),
