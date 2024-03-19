@@ -222,7 +222,9 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
               }
             : null,
         onLongPressDown: (details) {
-          setState(() => longPressed = true);
+          if (widget.playerController.playerState == PlayerState.playing) {
+            setState(() => longPressed = true);
+          }
           debugPrint('onLongPressDown');
         },
         onLongPressCancel: () {
