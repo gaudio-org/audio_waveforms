@@ -197,4 +197,17 @@ enum UpdateFrequency {
 
   const UpdateFrequency(this.value);
   final int value;
+
+  factory UpdateFrequency.fromValue(int value) {
+    switch (value) {
+      case 50:
+        return high;
+      case 100:
+        return medium;
+      case 200:
+        return low;
+      default:
+        return low;
+    }
+  }
 }

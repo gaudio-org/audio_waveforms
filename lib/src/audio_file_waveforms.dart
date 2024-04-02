@@ -73,7 +73,7 @@ class AudioFileWaveforms extends StatefulWidget {
   /// With seeking gesture enabled, playing audio can be seeked to
   /// any position using gestures.
   const AudioFileWaveforms({
-    Key? key,
+    super.key,
     required this.size,
     required this.playerController,
     this.waveformData = const [],
@@ -89,7 +89,7 @@ class AudioFileWaveforms extends StatefulWidget {
     this.waveformType = WaveformType.long,
     this.enableSeekGesture = true,
     this.onSeekCb,
-  }) : super(key: key);
+  });
 
   @override
   State<AudioFileWaveforms> createState() => _AudioFileWaveformsState();
@@ -225,13 +225,9 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
           if (widget.playerController.playerState == PlayerState.playing) {
             setState(() => longPressed = true);
           }
-          debugPrint('onLongPressDown');
         },
-        onLongPressCancel: () {
-          debugPrint('onLongPressCancel');
-        },
+        onLongPressCancel: () {},
         child: ClipPath(
-          // TODO: Update extraClipperHeight when duration labels are added
           clipper: WaveClipper(extraClipperHeight: 0),
           child: RepaintBoundary(
             child: ValueListenableBuilder<int>(
@@ -274,8 +270,9 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
     );
   }
 
-  void _addWaveformDataFromController() =>
-      _addWaveformData(widget.playerController.waveformData);
+  void _addWaveformDataFromController() {
+    _addWaveformData(widget.playerController.waveformData);
+  }
 
   void _updateGrowAnimationProgress() {
     if (mounted) {
@@ -296,10 +293,13 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
   }
 
   void _addWaveformData(List<double> data) {
-    _waveformData
-      ..clear()
-      ..addAll(data);
-    if (mounted) setState(() {});
+    if (mounted && (data.length % 10) == 0) {
+      _waveformData
+        ..clear()
+        ..addAll(data);
+      // debugPrint('call rebuild');
+      setState(() {});
+    }
   }
 
   void _handleDragGestures(DragUpdateDetails details) {
