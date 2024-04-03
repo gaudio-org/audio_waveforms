@@ -112,13 +112,6 @@ public class WaveformExtractor {
             currentProgress += 1
             progress = currentProgress / Float(samplesPerPixel)
 
-            /// Send to flutter channel
-            flutterChannel.invokeMethod(Constants.onCurrentExtractedWaveformData, arguments: [
-                Constants.waveformData: getChannelMean(data: data) as Any,
-                Constants.progress: progress,
-                Constants.playerKey: playerKey
-            ])
-
             startFrame += AVAudioFramePosition(framesPerBuffer)
 
             if startFrame + AVAudioFramePosition(framesPerBuffer) > totalFrameCount {
@@ -127,6 +120,12 @@ public class WaveformExtractor {
             }
         }
 
+        /// Send to flutter channel
+        flutterChannel.invokeMethod(Constants.onCurrentExtractedWaveformData, arguments: [
+            Constants.waveformData: getChannelMean(data: data) as Any,
+            Constants.progress: progress,
+            Constants.playerKey: playerKey
+        ])
         audioFile.framePosition = currentFrame
 
         return data
