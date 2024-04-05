@@ -334,16 +334,15 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
         break;
       case WaveformType.long:
         var diffFromCenter =
-            (details.localPosition.dx - (widget.size.width / 2));
-        _proportion = (diffFromCenter + _totalBackDistance.dx) /
-            (_waveformData.length * widget.playerWaveStyle.spacing);
-        if (_proportion < 0) {
-          _proportion = 0.0;
-        }
+            (details.localPosition.dx - (widget.size.width / 2)) /
+                widget.size.width;
 
-        if (_proportion > 1) {
-          _proportion = 1.0;
-        }
+        var temp = (widget.size.width / widget.playerWaveStyle.spacing / 10);
+        debugPrint(temp.toString());
+
+        _proportion += diffFromCenter / temp;
+        if (_proportion < 0) _proportion = 0;
+        if (_proportion > 1) _proportion = 1;
 
         var seekPosition = widget.playerController.maxDuration * _proportion;
         _seekProgress.value = seekPosition.toInt();
