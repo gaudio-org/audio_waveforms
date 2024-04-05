@@ -110,8 +110,7 @@ class RecorderWavePainter extends CustomPainter {
       ///wave gradient
       if (gradient != null) _waveGradient();
 
-      if (((spacing * i) + dragOffset.dx + spacing >
-              size.width / (extendWaveform ? 1 : 2) + totalBackDistance.dx) &&
+      if (((spacing * i) + dragOffset.dx + spacing > totalBackDistance.dx) &&
           callPushback) {
         pushBack();
       }
@@ -202,8 +201,11 @@ class RecorderWavePainter extends CustomPainter {
   void _drawWave(Canvas canvas, Size size, int i) {
     final halfWidth = size.width * 0.5;
     final height = size.height;
-    final dx =
-        -totalBackDistance.dx + dragOffset.dx + (spacing * i) - initialPosition;
+    final dx = size.width -
+        totalBackDistance.dx +
+        dragOffset.dx +
+        (spacing * i) -
+        initialPosition;
     final scaledWaveHeight = waveData[i] * scaleFactor;
     final upperDy = height - (showTop ? scaledWaveHeight : 0) - bottomPadding;
     final lowerDy =
