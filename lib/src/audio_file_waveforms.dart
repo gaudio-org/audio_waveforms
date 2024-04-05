@@ -324,11 +324,33 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
 
   /// This method handles tap seek gesture
   void _handleScrubberSeekStart(TapUpDetails details) {
-    _proportion = details.localPosition.dx / widget.size.width;
-    var seekPosition = widget.playerController.maxDuration * _proportion;
-    _seekProgress.value = seekPosition.toInt();
-    _updatePlayerPercent(widget.size);
-    widget.playerController.seekTo(seekPosition.toInt());
+    switch (widget.waveformType) {
+      case WaveformType.fitWidth:
+        _proportion = details.localPosition.dx / widget.size.width;
+        var seekPosition = widget.playerController.maxDuration * _proportion;
+        _seekProgress.value = seekPosition.toInt();
+        _updatePlayerPercent(widget.size);
+        widget.playerController.seekTo(seekPosition.toInt());
+        break;
+      case WaveformType.long:
+        var diffFromCenter =
+            (details.localPosition.dx - (widget.size.width / 2));
+        _proportion = (diffFromCenter + _totalBackDistance.dx) /
+            (_waveformData.length * widget.playerWaveStyle.spacing);
+        if (_proportion < 0) {
+          _proportion = 0.0;
+        }
+
+        if (_proportion > 1) {
+          _proportion = 1.0;
+        }
+
+        var seekPosition = widget.playerController.maxDuration * _proportion;
+        _seekProgress.value = seekPosition.toInt();
+        _updatePlayerPercent(widget.size);
+        widget.playerController.seekTo(seekPosition.toInt());
+        break;
+    }
   }
 
   ///This method handles horizontal scrolling of the wave
