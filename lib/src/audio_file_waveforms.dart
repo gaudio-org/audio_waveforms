@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:audio_waveforms/src/base/wave_clipper.dart';
 import 'package:audio_waveforms/src/painters/player_wave_painter.dart';
@@ -333,19 +334,17 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
         widget.playerController.seekTo(seekPosition.toInt());
         break;
       case WaveformType.long:
-        var diff = (details.localPosition.dx - (widget.size.width / 2)) /
-            widget.size.width;
+        var diff = (details.localPosition.dx - (widget.size.width / 2));
+        var timeOnScreen =
+            widget.size.width / widget.playerWaveStyle.spacing / 10;
+        var diffSeconds = diff / timeOnScreen / 2;
 
-        var temp = widget.size.width / widget.playerWaveStyle.spacing / 10;
-        _proportion += (diff / temp);
+        _seekProgress.value = (_seekProgress.value + (diffSeconds * 1000 ~/ 1));
+        _seekProgress.value = min(
+            max(0, _seekProgress.value), widget.playerController.maxDuration);
 
-        if (_proportion < 0) _proportion = 0.0;
-        if (_proportion > 1) _proportion = 1.0;
-
-        var seekPosition = widget.playerController.maxDuration * _proportion;
-        _seekProgress.value = seekPosition.toInt();
         _updatePlayerPercent(widget.size);
-        widget.playerController.seekTo(seekPosition.toInt());
+        widget.playerController.seekTo(_seekProgress.value);
         break;
     }
   }
