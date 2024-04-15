@@ -98,7 +98,8 @@ public class AudioRecorder: NSObject, AVAudioRecorderDelegate{
             let amp = audioRecorder?.averagePower(forChannel: 0) ?? 0.0
             result(amp)
         } else {
-            let amp = audioRecorder?.peakPower(forChannel: 0) ?? 0.0
+            // let amp = audioRecorder?.peakPower(forChannel: 0) ?? 0.0
+            let amp = audioRecorder?.averagePower(forChannel: 0) ?? 0.0
             let linear = pow(10, amp / 20);
             result(linear)
         }
