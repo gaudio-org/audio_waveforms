@@ -337,7 +337,8 @@ class _AudioFileWaveformsState extends State<AudioFileWaveforms>
         var diff = (details.localPosition.dx - (widget.size.width / 2));
         var timeOnScreen =
             widget.size.width / widget.playerWaveStyle.spacing / 10;
-        var diffSeconds = diff / timeOnScreen / 2;
+        var secondDistance = widget.size.width / timeOnScreen;
+        var diffSeconds = diff / secondDistance;
 
         _seekProgress.value = (_seekProgress.value + (diffSeconds * 1000 ~/ 1));
         _seekProgress.value = min(
